@@ -16,6 +16,8 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<XOgameContext>(x => x.UseNpgsql(connectionString));
 
+builder.Logging.AddLog4Net("log4net.config");
+
 #region DI
 
 //Invers of contral(паттерн)
