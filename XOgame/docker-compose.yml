@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+    questinary.pgsql:
+        image: postgres:12.4-alpine
+        container_name: xogame.pgsql
+        restart: always
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_PASSWORD=123qwe
+            - POSTGRES_DB=xogame
+            - PGDATA=/var/lib/postgresql/data/pgdata
+        volumes:
+            - ./docker/db:/var/lib/postgresql/data/pgdata
+
