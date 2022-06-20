@@ -1,6 +1,5 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using XOgame.Core;
 using XOgame.Extensions;
 using XOgame.Services;
 using XOgame.Services.Account.Dto;
@@ -19,18 +18,15 @@ public class AccountController : ControllerBase
         _accountService = accountService;
         _logger = logger;
     }
-    
+
     [HttpPost("[action]")]
     public async Task<IActionResult> Login(AccountInput input)
     {
         try
         {
-            bool isAccountExist = await _accountService.IsExist(input);
-            if (!isAccountExist )
-            {
-                await _accountService.Create(input);
-            }
-        
+            var isAccountExist = await _accountService.IsExist(input);
+            if (!isAccountExist) await _accountService.Create(input);
+
             return Ok();
         }
         catch (Exception e)
@@ -38,7 +34,5 @@ public class AccountController : ControllerBase
             _logger.Error(e, "ошибка при авторизации");
             return StatusCode((int) HttpStatusCode.InternalServerError);
         }
-        
-        
     }
 }

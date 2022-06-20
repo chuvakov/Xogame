@@ -16,7 +16,7 @@ public class AccountService : IAccountService
         _context = context;
         _logger = logger;
     }
-    
+
     public async Task<bool> IsExist(AccountInput input)
     {
         try
@@ -35,7 +35,7 @@ public class AccountService : IAccountService
     {
         try
         {
-            await _context.Users.AddAsync(new User(){Nickname = input.Nickname});
+            await _context.Users.AddAsync(new User {Nickname = input.Nickname});
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -43,7 +43,5 @@ public class AccountService : IAccountService
             _logger.Error(e);
             throw;
         }
-        
-        
     }
 }

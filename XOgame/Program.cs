@@ -17,12 +17,12 @@ var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<XOgameContext>(x => x.UseNpgsql(connectionString));
 
 builder.Logging.AddLog4Net("log4net.config");
+builder.Services.AddCors();
 
 #region DI
 
 //Invers of contral(паттерн)
 builder.Services.AddTransient<IAccountService, AccountService>();
-
 builder.Services.AddTransient<IRoomService, RoomService>();
 
 #endregion
@@ -38,8 +38,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors(builder => builder
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowAnyOrigin());
+
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
