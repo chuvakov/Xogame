@@ -9,4 +9,6 @@ public class User : Entity
     public int? CurrentRoomId { get; set; }
     [ForeignKey("CurrentRoomId")]
     public Room CurrentRoom { get; set; } 
+    
+    public bool IsReady { get; set; }
 }

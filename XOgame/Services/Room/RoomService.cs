@@ -4,6 +4,8 @@ using XOgame.Core;
 using XOgame.Core.Enums;
 using XOgame.Core.Models;
 using XOgame.Extensions;
+using XOgame.Services.Player;
+using XOgame.Services.Player.Dto;
 using XOgame.Services.Room.Dto;
 
 namespace XOgame.Services.Room;
@@ -83,24 +85,30 @@ public class RoomService : IRoomService
 
             if (player is null) throw new UserFriendlyException($@"Игрок ""{input.Nickname}"" не найден", -100);
 
-            player.CurrentRoomId = room.Id; //*
-            await _context.SaveChangesAsync(); //*
+            player.IsReady = false;
+            player.CurrentRoomId = room.Id;
+            await _context.SaveChangesAsync();
 
             var result = new EnterToGameDto
             {
                 Player = new PlayerDto
                 {
-                    Nickname = player.Nickname
+                    Nickname = player.Nickname,
+                    IsReady = player.IsReady,
+                    FigureType = FigureType.Cross
                 }
             };
 
-            if (room.Users.Count > 0)
+            if (room.Users.Count == 1)
             {
                 result.Player.FigureType = FigureType.Nought;
+
+                var opponent = room.Users.First();
                 result.Opponent = new PlayerDto
                 {
-                    Nickname = room.Users.First().Nickname,
-                    FigureType = FigureType.Cross
+                    Nickname = opponent.Nickname,
+                    FigureType = FigureType.Cross,
+                    IsReady = opponent.IsReady
                 };
 
                 await StartGame(result.Player, result.Opponent, room.Id);
@@ -138,11 +146,6 @@ public class RoomService : IRoomService
     {
         try
         {
-            var game = new Game
-            {
-                RoomId = roomId
-            };
-
             var playerFirstId = await _context.Users
                 .Where(u => u.Nickname == playerFirst.Nickname)
                 .Select(u => u.Id)
@@ -152,6 +155,12 @@ public class RoomService : IRoomService
                 .Where(u => u.Nickname == playerSecond.Nickname)
                 .Select(u => u.Id)
                 .FirstAsync();
+            
+            var game = new Core.Models.Game
+            {
+                RoomId = roomId,
+                UserTurnId = playerSecondId
+            };
 
             await _context.Games.AddAsync(game);
             await _context.SaveChangesAsync();
@@ -160,15 +169,22 @@ public class RoomService : IRoomService
             {
                 UserId = playerFirstId,
                 GameId = game.Id,
-                FigureType = playerFirst.FigureType
+                FigureType = playerFirst.FigureType.Value
             });
 
             await _context.UserGames.AddAsync(new UserGame
             {
                 UserId = playerSecondId,
                 GameId = game.Id,
-                FigureType = playerSecond.FigureType
+                FigureType = playerSecond.FigureType.Value
             });
+
+            var room = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
+
+            if (room != null)
+            {
+                room.CurrentGameId = game.Id;
+            }
 
             await _context.SaveChangesAsync();
         }
@@ -176,6 +192,100 @@ public class RoomService : IRoomService
         {
             _logger.Error(e);
             throw new UserFriendlyException("Не удалось запустить игру", -100);
+        }
+    }
+
+    public async Task<RoomInfoDto> GetInfo(string name)
+    {
+        try
+        {
+            var room = await _context.Rooms
+                .Include(r => r.Users)
+                .FirstOrDefaultAsync(r => r.Name == name);
+
+            if (room == null)
+            {
+                throw new UserFriendlyException($"Комната с названием {name} не найдена");
+            }
+
+            var firstUser = room.Users.ToArray()[0];
+            FigureType? firstUserFigureType = await _context.UserGames
+                .Where(ug => ug.UserId == firstUser.Id)
+                .Select(ug => ug.FigureType)
+                .FirstOrDefaultAsync();
+
+            var players = new List<PlayerDto>()
+            {
+                new PlayerDto()
+                {
+                    FigureType = firstUserFigureType,
+                    IsReady = firstUser.IsReady,
+                    Nickname = firstUser.Nickname
+                }
+            };
+
+            if (room.Users.Count == 2)
+            {
+                var secondUser = room.Users.ToArray()[1];
+                
+                FigureType? secondUserFigureType = null;
+                if (firstUserFigureType.HasValue)
+                {
+                    if (firstUserFigureType.Value == FigureType.Nought)
+                    {
+                        secondUserFigureType = FigureType.Cross;
+                    }
+                    else
+                    {
+                        secondUserFigureType = FigureType.Nought;
+                    }
+                }
+
+                players.Add(new PlayerDto
+                {
+                    FigureType = secondUserFigureType,
+                    IsReady = secondUser.IsReady,
+                    Nickname = secondUser.Nickname
+                });
+            }
+
+            return new RoomInfoDto()
+            {
+                Players = players.ToArray(),
+            };
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e);
+            throw;
+        }
+    }
+
+    public async Task Delete(string name)
+    {
+        try
+        {
+            var room = await _context.Rooms
+                .Include(r => r.Users)
+                .FirstOrDefaultAsync(r => r.Name == name);
+            
+            if (room == null)
+            {
+                throw new UserFriendlyException(@$"Комната с название ""{name}"" не существует");
+            }
+
+            foreach (var user in room.Users)
+            {
+                user.CurrentRoomId = null;
+            }
+
+            _context.Rooms.Remove(room);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e);
+            throw;
         }
     }
 }

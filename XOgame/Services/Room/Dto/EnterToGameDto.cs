@@ -1,3 +1,5 @@
+using XOgame.Services.Player.Dto;
+
 namespace XOgame.Services.Room.Dto;
 
 public class EnterToGameDto

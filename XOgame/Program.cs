@@ -2,7 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using XOgame.Core;
 using XOgame.Services;
 using XOgame.Services.Account;
+using XOgame.Services.Game;
+using XOgame.Services.Player;
 using XOgame.Services.Room;
+using XOgame.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,13 +20,26 @@ var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<XOgameContext>(x => x.UseNpgsql(connectionString));
 
 builder.Logging.AddLog4Net("log4net.config");
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("localhost", builder =>
+    {
+        builder
+            .SetIsOriginAllowed(x => true)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowAnyOrigin();
+    });
+});
+builder.Services.AddSignalR();
 
 #region DI
 
 //Invers of contral(паттерн)
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<IRoomService, RoomService>();
+builder.Services.AddTransient<IPlayerService, PlayerService>();
+builder.Services.AddTransient<IGameService, GameService>();
 
 #endregion
 
@@ -38,11 +54,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(builder => builder
-    .AllowAnyHeader()
-    .AllowAnyMethod()
-    .AllowAnyOrigin());
+app.UseRouting();
+app.UseCors("localhost");
 
 app.UseAuthorization();
-app.MapControllers();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapHub<RoomHub>("/hubs/room");
+});
 app.Run();

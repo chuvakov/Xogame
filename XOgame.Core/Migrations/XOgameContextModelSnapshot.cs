@@ -30,7 +30,10 @@ namespace XOgame.Core.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("RoomId")
+                    b.Property<int?>("RoomId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UserTurnId")
                         .HasColumnType("integer");
 
                     b.Property<int?>("WinnerId")
@@ -39,6 +42,8 @@ namespace XOgame.Core.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RoomId");
+
+                    b.HasIndex("UserTurnId");
 
                     b.HasIndex("WinnerId");
 
@@ -53,13 +58,10 @@ namespace XOgame.Core.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ColumnNumber")
+                    b.Property<int>("CellNumber")
                         .HasColumnType("integer");
 
                     b.Property<int>("GameId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RowNumber")
                         .HasColumnType("integer");
 
                     b.Property<int>("UserId")
@@ -82,10 +84,15 @@ namespace XOgame.Core.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CurrentGameId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CurrentGameId");
 
                     b.ToTable("Rooms");
                 });
@@ -100,6 +107,9 @@ namespace XOgame.Core.Migrations
 
                     b.Property<int?>("CurrentRoomId")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("IsReady")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Nickname")
                         .HasColumnType("text");
@@ -141,9 +151,11 @@ namespace XOgame.Core.Migrations
                 {
                     b.HasOne("XOgame.Core.Models.Room", "Room")
                         .WithMany()
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RoomId");
+
+                    b.HasOne("XOgame.Core.Models.User", "UserTurn")
+                        .WithMany()
+                        .HasForeignKey("UserTurnId");
 
                     b.HasOne("XOgame.Core.Models.User", "Winner")
                         .WithMany()
@@ -151,13 +163,15 @@ namespace XOgame.Core.Migrations
 
                     b.Navigation("Room");
 
+                    b.Navigation("UserTurn");
+
                     b.Navigation("Winner");
                 });
 
             modelBuilder.Entity("XOgame.Core.Models.GameProgress", b =>
                 {
                     b.HasOne("XOgame.Core.Models.Game", "Game")
-                        .WithMany()
+                        .WithMany("GameProgresses")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -173,10 +187,19 @@ namespace XOgame.Core.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("XOgame.Core.Models.Room", b =>
+                {
+                    b.HasOne("XOgame.Core.Models.Game", "CurrentGame")
+                        .WithMany()
+                        .HasForeignKey("CurrentGameId");
+
+                    b.Navigation("CurrentGame");
+                });
+
             modelBuilder.Entity("XOgame.Core.Models.User", b =>
                 {
                     b.HasOne("XOgame.Core.Models.Room", "CurrentRoom")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("CurrentRoomId");
 
                     b.Navigation("CurrentRoom");
@@ -185,7 +208,7 @@ namespace XOgame.Core.Migrations
             modelBuilder.Entity("XOgame.Core.Models.UserGame", b =>
                 {
                     b.HasOne("XOgame.Core.Models.Game", "Game")
-                        .WithMany()
+                        .WithMany("UserGames")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -199,6 +222,18 @@ namespace XOgame.Core.Migrations
                     b.Navigation("Game");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("XOgame.Core.Models.Game", b =>
+                {
+                    b.Navigation("GameProgresses");
+
+                    b.Navigation("UserGames");
+                });
+
+            modelBuilder.Entity("XOgame.Core.Models.Room", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

@@ -12,6 +12,5 @@ public class GameProgress : Entity
     [ForeignKey("UserId")]
     public User User { get; set; }
 
-    public int RowNumber { get; set; }
-    public int ColumnNumber { get; set; }
+    public int CellNumber { get; set; }
 }

@@ -59,7 +59,7 @@ public class RoomsController : ControllerBase
             return StatusCode((int) HttpStatusCode.InternalServerError, message);
         }
     }
-    
+
     [HttpPost("[action]")]
     public async Task<IActionResult> Exit(string nickname)
     {
@@ -71,6 +71,39 @@ public class RoomsController : ControllerBase
         catch (Exception e)
         {
             var message = "Не удалось выйти из комнаты";
+
+            if (e is UserFriendlyException) message = e.Message;
+            return StatusCode((int) HttpStatusCode.InternalServerError, message);
+        }
+    }
+
+    [HttpGet("[action]")]
+    public async Task<IActionResult> GetInfo(string name)
+    {
+        try
+        {
+            return Ok(await _roomService.GetInfo(name));
+        }
+        catch (Exception e)
+        {
+            var message = @$"Не удалось получить информацию о комнате ""{name}""";
+
+            if (e is UserFriendlyException) message = e.Message;
+            return StatusCode((int) HttpStatusCode.InternalServerError, message);
+        }
+    }
+
+    [HttpDelete("[action]")]
+    public async Task<IActionResult> Delete(string name)
+    {
+        try
+        {
+            await _roomService.Delete(name);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            var message = @$"Не удалось удалить комнату ""{name}""";
 
             if (e is UserFriendlyException) message = e.Message;
             return StatusCode((int) HttpStatusCode.InternalServerError, message);
