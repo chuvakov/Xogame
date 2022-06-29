@@ -63,5 +63,6 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
     endpoints.MapHub<RoomHub>("/hubs/room");
+    endpoints.MapHub<GameHub>("/hubs/game");
 });
 app.Run();

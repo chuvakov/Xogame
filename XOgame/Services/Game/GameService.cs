@@ -52,12 +52,18 @@ public class GameService : IGameService
 
         if (game.WinnerId.HasValue)
         {
-            throw new UserFriendlyException("Данная игра является завершенной");
+            throw new UserFriendlyException("Данная игра является завершенной!");
         }
 
         if (game.UserTurn != user)
         {
-            throw new UserFriendlyException("Сейчас не ваш ход");
+            throw new UserFriendlyException("Сейчас не ваш ход!");
+        }
+
+        var isExistStep = _context.GameProgresses.Any(gp => gp.GameId == gameId && gp.CellNumber == input.CellNumber);
+        if (isExistStep)
+        {
+            throw new UserFriendlyException("Данная ячейка занята!");
         }
 
         await _context.GameProgresses.AddAsync(new GameProgress()
