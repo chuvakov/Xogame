@@ -8,7 +8,7 @@ public interface IRoomService
     Task<IEnumerable<RoomDto>> GetAll();
     Task Create(CreateRoomDto input);
     Task<EnterToGameDto> Enter(EnterToRoomDto input);
-    Task Exit(string nickname);
+    Task<bool> Exit(string nickname);
     Task<RoomInfoDto> GetInfo(string name);
     Task Delete(string name);
 }

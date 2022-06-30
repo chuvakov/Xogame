@@ -123,7 +123,7 @@ public class RoomService : IRoomService
         }
     }
 
-    public async Task Exit(string nickname)
+    public async Task<bool> Exit(string nickname)
     {
         try
         {
@@ -137,13 +137,16 @@ public class RoomService : IRoomService
                 .Include(r => r.Users)
                 .SingleAsync(r => r.Id == user.CurrentRoomId);
             
+            var isRoomDeleted = false;
             if (room.Users.Count == 1)
             {
                 _context.Rooms.Remove(room);
+                isRoomDeleted = true;
             }
 
             user.CurrentRoomId = null;
             await _context.SaveChangesAsync();
+            return isRoomDeleted;
         }
         catch (Exception e)
         {

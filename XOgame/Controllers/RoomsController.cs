@@ -1,8 +1,10 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using XOgame.Common.Exceptions;
 using XOgame.Services.Room;
 using XOgame.Services.Room.Dto;
+using XOgame.SignalR;
 
 namespace XOgame.Controllers;
 
@@ -11,10 +13,12 @@ namespace XOgame.Controllers;
 public class RoomsController : ControllerBase
 {
     private readonly IRoomService _roomService;
+    private readonly IHubContext<RoomHub> _roomHub;
 
-    public RoomsController(IRoomService roomService)
+    public RoomsController(IRoomService roomService, IHubContext<RoomHub> roomHub)
     {
         _roomService = roomService;
+        _roomHub = roomHub;
     }
 
     [HttpGet("[action]")]
@@ -65,7 +69,11 @@ public class RoomsController : ControllerBase
     {
         try
         {
-            await _roomService.Exit(nickname);
+            var isRoomDeleted = await _roomService.Exit(nickname);
+            if (isRoomDeleted)
+            {
+                await _roomHub.Clients.All.SendAsync("DeleteRoom");
+            }
             return Ok();
         }
         catch (Exception e)
