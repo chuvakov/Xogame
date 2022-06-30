@@ -150,8 +150,9 @@ namespace XOgame.Core.Migrations
             modelBuilder.Entity("XOgame.Core.Models.Game", b =>
                 {
                     b.HasOne("XOgame.Core.Models.Room", "Room")
-                        .WithMany()
-                        .HasForeignKey("RoomId");
+                        .WithMany("Games")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("XOgame.Core.Models.User", "UserTurn")
                         .WithMany()
@@ -233,6 +234,8 @@ namespace XOgame.Core.Migrations
 
             modelBuilder.Entity("XOgame.Core.Models.Room", b =>
                 {
+                    b.Navigation("Games");
+
                     b.Navigation("Users");
                 });
 #pragma warning restore 612, 618

@@ -127,9 +127,20 @@ public class RoomService : IRoomService
     {
         try
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Nickname == nickname);
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Nickname == nickname);
+            
             if (user == null)
                 throw new UserFriendlyException("Пользователь не найден", -100);
+
+            var room = await _context.Rooms
+                .Include(r => r.Users)
+                .SingleAsync(r => r.Id == user.CurrentRoomId);
+            
+            if (room.Users.Count == 1)
+            {
+                _context.Rooms.Remove(room);
+            }
 
             user.CurrentRoomId = null;
             await _context.SaveChangesAsync();

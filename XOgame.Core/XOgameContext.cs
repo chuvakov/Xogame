@@ -13,4 +13,12 @@ public class XOgameContext : DbContext
     
     public XOgameContext(DbContextOptions options) : base(options)
     {}
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Game>()
+            .HasOne(g => g.Room)
+            .WithMany(r => r.Games)
+            .OnDelete(DeleteBehavior.SetNull);
+    }
 }

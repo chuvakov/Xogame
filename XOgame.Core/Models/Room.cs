@@ -11,4 +11,6 @@ public class Room : Entity
     public virtual int? CurrentGameId { get; set; }
     [ForeignKey("CurrentGameId")]
     public virtual Game CurrentGame { get; set; }
+    
+    public virtual ICollection<Game> Games { get; set; }
 }
