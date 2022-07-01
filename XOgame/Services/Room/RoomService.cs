@@ -266,6 +266,7 @@ public class RoomService : IRoomService
             return new RoomInfoDto()
             {
                 Players = players.ToArray(),
+                IsGameStarted = room.CurrentGameId.HasValue
             };
         }
         catch (Exception e)
