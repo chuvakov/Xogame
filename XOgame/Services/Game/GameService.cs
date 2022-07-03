@@ -118,11 +118,11 @@ public class GameService : IGameService
                     
                     if (user.Id == player.Id)
                     {
-                        await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname);
+                        await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, true);
                     }
                     else
                     {
-                        await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname); //**
+                        await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, false);
                     }
                 }
 
