@@ -4,6 +4,7 @@ using XOgame.Common.Exceptions;
 using XOgame.Core;
 using XOgame.Core.Enums;
 using XOgame.Core.Models;
+using XOgame.Extensions;
 using XOgame.Services.Game.Dto;
 using XOgame.Services.Player.Dto;
 using XOgame.SignalR;
@@ -14,6 +15,7 @@ public class GameService : IGameService
 {
     private readonly XOgameContext _context;
     private readonly IHubContext<GameHub> _gameHub;
+    private readonly ILogger<GameService> _logger;
 
     private readonly int[][] _winnerPositions =
     {
@@ -27,10 +29,11 @@ public class GameService : IGameService
         new[] {3, 5, 7}
     };
 
-        public GameService(XOgameContext context, IHubContext<GameHub> gameHub)
+        public GameService(XOgameContext context, IHubContext<GameHub> gameHub, ILogger<GameService> logger)
         {
             _context = context;
             _gameHub = gameHub;
+            _logger = logger;
         }
 
     public async Task<DoStepResultDto> DoStep(DoStepInput input)
@@ -122,6 +125,10 @@ public class GameService : IGameService
                         await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname); //**
                     }
                 }
+
+                user.CurrentRoom.CurrentGameId = null;
+                await _context.SaveChangesAsync();
+                
                 return result;
             }
         }
@@ -173,5 +180,49 @@ public class GameService : IGameService
         result.Steps = steps;
 
         return result;
+    }
+    
+    //Вспомогательный метод создающий запись в таблице Игра
+    public async Task StartGame(int playerFirstId, int playerSecondId, int roomId)
+    {
+        try
+        {
+            var game = new Core.Models.Game
+            {
+                RoomId = roomId,
+                UserTurnId = playerFirstId
+            };
+
+            await _context.Games.AddAsync(game);
+            await _context.SaveChangesAsync();
+
+            await _context.UserGames.AddAsync(new UserGame
+            {
+                UserId = playerFirstId,
+                GameId = game.Id,
+                FigureType = FigureType.Cross
+            });
+
+            await _context.UserGames.AddAsync(new UserGame
+            {
+                UserId = playerSecondId,
+                GameId = game.Id,
+                FigureType = FigureType.Nought
+            });
+
+            var room = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
+
+            if (room != null)
+            {
+                room.CurrentGameId = game.Id;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e);
+            throw new UserFriendlyException("Не удалось запустить игру", -100);
+        }
     }
 }

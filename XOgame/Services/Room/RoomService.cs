@@ -110,8 +110,6 @@ public class RoomService : IRoomService
                     FigureType = FigureType.Cross,
                     IsReady = opponent.IsReady
                 };
-
-                await StartGame(result.Player, result.Opponent, room.Id);
             }
 
             return result;
@@ -155,59 +153,7 @@ public class RoomService : IRoomService
         }
     }
 
-    //Вспомогательный метод создающий запись в таблице Игра
-    private async Task StartGame(PlayerDto playerFirst, PlayerDto playerSecond, int roomId)
-    {
-        try
-        {
-            var playerFirstId = await _context.Users
-                .Where(u => u.Nickname == playerFirst.Nickname)
-                .Select(u => u.Id)
-                .FirstAsync();
-
-            var playerSecondId = await _context.Users
-                .Where(u => u.Nickname == playerSecond.Nickname)
-                .Select(u => u.Id)
-                .FirstAsync();
-            
-            var game = new Core.Models.Game
-            {
-                RoomId = roomId,
-                UserTurnId = playerSecondId
-            };
-
-            await _context.Games.AddAsync(game);
-            await _context.SaveChangesAsync();
-
-            await _context.UserGames.AddAsync(new UserGame
-            {
-                UserId = playerFirstId,
-                GameId = game.Id,
-                FigureType = playerFirst.FigureType.Value
-            });
-
-            await _context.UserGames.AddAsync(new UserGame
-            {
-                UserId = playerSecondId,
-                GameId = game.Id,
-                FigureType = playerSecond.FigureType.Value
-            });
-
-            var room = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
-
-            if (room != null)
-            {
-                room.CurrentGameId = game.Id;
-            }
-
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            _logger.Error(e);
-            throw new UserFriendlyException("Не удалось запустить игру", -100);
-        }
-    }
+    
 
     public async Task<RoomInfoDto> GetInfo(string name)
     {
