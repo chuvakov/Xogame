@@ -163,6 +163,11 @@ public class GameService : IGameService
             }),
         };
 
+        if (game.UserTurnId.HasValue)
+        {
+            result.PlayerTurnNickname = room.Users.Single(u => u.Id == game.UserTurnId.Value).Nickname;
+        }
+
         var steps = new List<StepDto>();
         foreach (var gameProgress in game.GameProgresses)
         {
