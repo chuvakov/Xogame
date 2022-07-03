@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using XOgame.Common.Exceptions;
 using XOgame.Core;
@@ -5,12 +6,14 @@ using XOgame.Core.Enums;
 using XOgame.Core.Models;
 using XOgame.Services.Game.Dto;
 using XOgame.Services.Player.Dto;
+using XOgame.SignalR;
 
 namespace XOgame.Services.Game;
 
 public class GameService : IGameService
 {
     private readonly XOgameContext _context;
+    private readonly IHubContext<GameHub> _gameHub;
 
     private readonly int[][] _winnerPositions =
     {
@@ -24,10 +27,11 @@ public class GameService : IGameService
         new[] {3, 5, 7}
     };
 
-        public GameService(XOgameContext context)
-    {
-        _context = context;
-    }
+        public GameService(XOgameContext context, IHubContext<GameHub> gameHub)
+        {
+            _context = context;
+            _gameHub = gameHub;
+        }
 
     public async Task<DoStepResultDto> DoStep(DoStepInput input)
     {
@@ -102,6 +106,22 @@ public class GameService : IGameService
             {
                 result.IsWinner = true;
                 result.IsFinish = true;
+
+                foreach (var userGame in game.UserGames)
+                {
+                    var player = await _context.Users.SingleAsync(u => u.Id == userGame.UserId);
+                    player.IsReady = false;
+                    await _context.SaveChangesAsync();
+                    
+                    if (user.Id == player.Id)
+                    {
+                        await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname);
+                    }
+                    else
+                    {
+                        await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname); //**
+                    }
+                }
                 return result;
             }
         }
