@@ -32,4 +32,10 @@ public class PlayersController : ControllerBase
             return StatusCode((int) HttpStatusCode.InternalServerError, message);
         }
     }
+    
+    [HttpGet("[action]")]
+    public async Task<IActionResult> GetFigureType(string nickname)
+    {
+        return Ok(await _playerService.GetFigureType(nickname));
+    }
 }

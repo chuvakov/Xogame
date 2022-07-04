@@ -209,18 +209,20 @@ public class GameService : IGameService
             await _context.Games.AddAsync(game);
             await _context.SaveChangesAsync();
 
+            var random = new Random();
+            var playerFirstFigureType = random.Next(0, 2);
             await _context.UserGames.AddAsync(new UserGame
             {
                 UserId = playerFirstId,
                 GameId = game.Id,
-                FigureType = FigureType.Cross
+                FigureType = playerFirstFigureType == 1 ? FigureType.Cross : FigureType.Nought
             });
 
             await _context.UserGames.AddAsync(new UserGame
             {
                 UserId = playerSecondId,
                 GameId = game.Id,
-                FigureType = FigureType.Nought
+                FigureType = playerFirstFigureType == 1 ? FigureType.Nought : FigureType.Cross
             });
 
             var room = _context.Rooms.FirstOrDefault(r => r.Id == roomId);

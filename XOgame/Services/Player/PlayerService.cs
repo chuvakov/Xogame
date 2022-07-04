@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using XOgame.Common.Exceptions;
 using XOgame.Core;
+using XOgame.Core.Enums;
 using XOgame.Extensions;
 using XOgame.Services.Game;
 
@@ -44,5 +45,16 @@ public class PlayerService : IPlayerService
             _logger.Error(e);
             throw;
         }
+    }
+
+    public async Task<char> GetFigureType(string nickname)
+    {
+        var user = await _context.Users
+            .Include(u => u.CurrentRoom)
+            .SingleOrDefaultAsync(u => u.Nickname == nickname);
+        var userGame = await _context.UserGames.SingleOrDefaultAsync(ug =>
+            ug.UserId == user.Id && ug.GameId == user.CurrentRoom.CurrentGameId);
+
+        return userGame.FigureType == FigureType.Cross ? 'X' : 'O';
     }
 }
