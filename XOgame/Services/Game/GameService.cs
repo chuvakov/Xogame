@@ -118,11 +118,19 @@ public class GameService : IGameService
                     
                     if (user.Id == player.Id)
                     {
-                        await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, true);
+                        await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
+                        {
+                            isWinner = true,
+                        });
                     }
                     else
                     {
-                        await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, false);
+                        await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
+                        {
+                            isWinner = false,
+                            cell = input.CellNumber,
+                            figureType = userGame.FigureType == FigureType.Cross ? 'O' : 'X'
+                        });
                     }
                 }
 
