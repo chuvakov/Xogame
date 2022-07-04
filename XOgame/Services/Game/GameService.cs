@@ -200,17 +200,18 @@ public class GameService : IGameService
     {
         try
         {
+            var random = new Random();
+            var playerFirstFigureType = random.Next(0, 2);
+            
             var game = new Core.Models.Game
             {
                 RoomId = roomId,
-                UserTurnId = playerFirstId
+                UserTurnId = playerFirstFigureType == 1 ? playerFirstId : playerSecondId
             };
 
             await _context.Games.AddAsync(game);
             await _context.SaveChangesAsync();
 
-            var random = new Random();
-            var playerFirstFigureType = random.Next(0, 2);
             await _context.UserGames.AddAsync(new UserGame
             {
                 UserId = playerFirstId,
