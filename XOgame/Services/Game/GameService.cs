@@ -120,14 +120,14 @@ public class GameService : IGameService
                     {
                         await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
                         {
-                            isWinner = true,
+                            result = GameResult.Win,
                         });
                     }
                     else
                     {
                         await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
                         {
-                            isWinner = false,
+                            result = GameResult.Lose,
                             cell = input.CellNumber,
                             figureType = userGame.FigureType == FigureType.Cross ? 'O' : 'X'
                         });
@@ -139,6 +139,40 @@ public class GameService : IGameService
                 
                 return result;
             }
+        }
+
+        if (result.IsFinish)
+        {
+            foreach (var userGame in game.UserGames)
+            {
+                var player = await _context.Users.SingleAsync(u => u.Id == userGame.UserId);
+                player.IsReady = false;
+                await _context.SaveChangesAsync();
+                    
+                if (user.Id == player.Id)
+                {
+                    await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
+                    {
+                        result = GameResult.Draw,
+                        cell = input.CellNumber,
+                        figureType = userGame.FigureType == FigureType.Cross ? 'X' : 'O'
+                    });
+                }
+                else
+                {
+                    await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
+                    {
+                        result = GameResult.Draw,
+                        cell = input.CellNumber,
+                        figureType = userGame.FigureType == FigureType.Cross ? 'O' : 'X'
+                    });
+                }
+            }
+
+            user.CurrentRoom.CurrentGameId = null;
+            await _context.SaveChangesAsync();
+
+            return result;
         }
 
         game.UserTurnId = game.UserGames.Single(ug => ug.UserId != user.Id).UserId;
