@@ -2,9 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using XOgame.Common.Exceptions;
 using XOgame.Core;
 using XOgame.Core.Enums;
-using XOgame.Core.Models;
 using XOgame.Extensions;
-using XOgame.Services.Player;
 using XOgame.Services.Player.Dto;
 using XOgame.Services.Room.Dto;
 
@@ -153,8 +151,6 @@ public class RoomService : IRoomService
         }
     }
 
-    
-
     public async Task<RoomInfoDto> GetInfo(string name)
     {
         try
@@ -169,6 +165,7 @@ public class RoomService : IRoomService
             }
 
             var firstUser = room.Users.ToArray()[0];
+            
             FigureType? firstUserFigureType = await _context.UserGames
                 .Where(ug => ug.UserId == firstUser.Id)
                 .Select(ug => ug.FigureType)
@@ -189,16 +186,13 @@ public class RoomService : IRoomService
                 var secondUser = room.Users.ToArray()[1];
                 
                 FigureType? secondUserFigureType = null;
-                if (firstUserFigureType.HasValue)
+                if (firstUserFigureType.Value == FigureType.Nought)
                 {
-                    if (firstUserFigureType.Value == FigureType.Nought)
-                    {
-                        secondUserFigureType = FigureType.Cross;
-                    }
-                    else
-                    {
-                        secondUserFigureType = FigureType.Nought;
-                    }
+                    secondUserFigureType = FigureType.Cross;
+                }
+                else
+                {
+                    secondUserFigureType = FigureType.Nought;
                 }
 
                 players.Add(new PlayerDto

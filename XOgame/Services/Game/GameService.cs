@@ -29,12 +29,12 @@ public class GameService : IGameService
         new[] {3, 5, 7}
     };
 
-        public GameService(XOgameContext context, IHubContext<GameHub> gameHub, ILogger<GameService> logger)
-        {
-            _context = context;
-            _gameHub = gameHub;
-            _logger = logger;
-        }
+    public GameService(XOgameContext context, IHubContext<GameHub> gameHub, ILogger<GameService> logger)
+    {
+        _context = context;
+        _gameHub = gameHub;
+        _logger = logger;
+    }
 
     public async Task<DoStepResultDto> DoStep(DoStepInput input)
     {

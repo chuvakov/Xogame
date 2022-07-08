@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using XOgame.Extensions;
 using XOgame.Services;
 using XOgame.Services.Account.Dto;
+using XOgame.Services.Player;
 
 namespace XOgame.Controllers;
 
@@ -12,11 +13,13 @@ public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
     private readonly ILogger<AccountController> _logger;
+    private readonly IPlayerService _playerService;
 
-    public AccountController(IAccountService accountService, ILogger<AccountController> logger)
+    public AccountController(IAccountService accountService, ILogger<AccountController> logger, IPlayerService playerService)
     {
         _accountService = accountService;
         _logger = logger;
+        _playerService = playerService;
     }
 
     [HttpPost("[action]")]
@@ -24,6 +27,10 @@ public class AccountController : ControllerBase
     {
         try
         {
+            if (await _playerService.IsPlayerInRoom(input.Nickname))
+            {
+                return BadRequest("Ник занят");
+            }
             var isAccountExist = await _accountService.IsExist(input);
             if (!isAccountExist) await _accountService.Create(input);
 

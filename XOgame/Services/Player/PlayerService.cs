@@ -57,4 +57,16 @@ public class PlayerService : IPlayerService
 
         return userGame.FigureType == FigureType.Cross ? 'X' : 'O';
     }
+
+    public async Task<bool> IsPlayerInRoom(string nickname)
+    {
+        var player = await _context.Users.SingleOrDefaultAsync(p => p.Nickname == nickname);
+
+        if (player == null)
+        {
+            throw new UserFriendlyException($@"Пользователя с никком ""{nickname}"" нет", -100);
+        }
+
+        return player.CurrentRoomId.HasValue;
+    }
 }

@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using XOgame.Common.Exceptions;
+using XOgame.Services.Player;
 using XOgame.Services.Room;
 using XOgame.Services.Room.Dto;
 using XOgame.SignalR;
@@ -14,11 +15,13 @@ public class RoomsController : ControllerBase
 {
     private readonly IRoomService _roomService;
     private readonly IHubContext<RoomHub> _roomHub;
+    private readonly IPlayerService _playerService;
 
-    public RoomsController(IRoomService roomService, IHubContext<RoomHub> roomHub)
+    public RoomsController(IRoomService roomService, IHubContext<RoomHub> roomHub, IPlayerService playerService)
     {
         _roomService = roomService;
         _roomHub = roomHub;
+        _playerService = playerService;
     }
 
     [HttpGet("[action]")]
@@ -53,6 +56,10 @@ public class RoomsController : ControllerBase
     {
         try
         {
+            if (await _playerService.IsPlayerInRoom(input.Nickname))
+            {
+                return BadRequest("Ник занят");
+            }
             return Ok(await _roomService.Enter(input));
         }
         catch (Exception e)
