@@ -27,11 +27,11 @@ public class AccountController : ControllerBase
     {
         try
         {
-            if (await _playerService.IsPlayerInRoom(input.Nickname))
+            var isAccountExist = await _accountService.IsExist(input);
+            if (isAccountExist && await _playerService.IsPlayerInRoom(input.Nickname))
             {
                 return BadRequest("Ник занят");
             }
-            var isAccountExist = await _accountService.IsExist(input);
             if (!isAccountExist) await _accountService.Create(input);
 
             return Ok();

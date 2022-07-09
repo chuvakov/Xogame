@@ -17,16 +17,48 @@ public class GameService : IGameService
     private readonly IHubContext<GameHub> _gameHub;
     private readonly ILogger<GameService> _logger;
 
-    private readonly int[][] _winnerPositions =
+    private readonly WinnerPositionDto[] _winnerPositions =
     {
-        new[] {1, 2, 3},
-        new[] {4, 5, 6},
-        new[] {7, 8, 9},
-        new[] {1, 4, 7},
-        new[] {2, 5, 8},
-        new[] {3, 6, 9},
-        new[] {1, 5, 9},
-        new[] {3, 5, 7}
+        new WinnerPositionDto()
+        {
+            Cells = new[] {1, 2, 3},
+            Type = WinnerPositionType.Horizontal
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {4, 5, 6},
+            Type = WinnerPositionType.Horizontal
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {7, 8, 9},
+            Type = WinnerPositionType.Horizontal
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {1, 4, 7},
+            Type = WinnerPositionType.Vertical
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {2, 5, 8},
+            Type = WinnerPositionType.Vertical
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {3, 6, 9},
+            Type = WinnerPositionType.Vertical
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {1, 5, 9},
+            Type = WinnerPositionType.LeftSlash
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {3, 5, 7},
+            Type = WinnerPositionType.RightSlash
+        }
     };
 
     public GameService(XOgameContext context, IHubContext<GameHub> gameHub, ILogger<GameService> logger)
@@ -101,11 +133,11 @@ public class GameService : IGameService
         foreach (var winnerPosition in _winnerPositions)
         {
             var resultPosition = numberSteps
-                .Intersect(winnerPosition)
+                .Intersect(winnerPosition.Cells)
                 .OrderBy(n => n)
                 .ToArray();
 
-            if (Enumerable.SequenceEqual(resultPosition, winnerPosition))
+            if (Enumerable.SequenceEqual(resultPosition, winnerPosition.Cells))
             {
                 result.IsWinner = true;
                 result.IsFinish = true;
@@ -121,6 +153,7 @@ public class GameService : IGameService
                         await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
                         {
                             result = GameResult.Win,
+                            winnerPosition = winnerPosition
                         });
                     }
                     else
@@ -129,7 +162,8 @@ public class GameService : IGameService
                         {
                             result = GameResult.Lose,
                             cell = input.CellNumber,
-                            figureType = userGame.FigureType == FigureType.Cross ? 'O' : 'X'
+                            figureType = userGame.FigureType == FigureType.Cross ? 'O' : 'X',
+                            winnerPosition = winnerPosition
                         });
                     }
                 }
