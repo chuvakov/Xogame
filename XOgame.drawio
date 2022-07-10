@@ -1,11 +1,11 @@
-<mxfile host="app.diagrams.net" modified="2022-07-10T07:13:49.493Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" etag="5-hluXUJtRyuoIkccLob" version="20.0.1" type="github">
+<mxfile host="app.diagrams.net" modified="2022-07-10T08:01:08.275Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" etag="tqhlT1Pz9qx3mjEU8C7-" version="20.0.1" type="github">
   <diagram id="ZaCi_uB1NjFAqdQw6VMu" name="Page-1">
     <mxGraphModel dx="1238" dy="547" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="BzKpuiVinzIO0FmsP6Cw-34" value="Пользователь" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
-          <mxGeometry x="50" y="70" width="140" height="150" as="geometry" />
+          <mxGeometry x="50" y="70" width="140" height="180" as="geometry" />
         </mxCell>
         <mxCell id="BzKpuiVinzIO0FmsP6Cw-35" value="Ид" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" parent="BzKpuiVinzIO0FmsP6Cw-34" vertex="1">
           <mxGeometry y="30" width="140" height="30" as="geometry" />
@@ -16,11 +16,14 @@
         <mxCell id="BzKpuiVinzIO0FmsP6Cw-37" value="ИдТекущейКомнаты?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" parent="BzKpuiVinzIO0FmsP6Cw-34" vertex="1">
           <mxGeometry y="90" width="140" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="BzKpuiVinzIO0FmsP6Cw-38" value="Готовность" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" parent="BzKpuiVinzIO0FmsP6Cw-34" vertex="1">
+        <mxCell id="BzKpuiVinzIO0FmsP6Cw-38" value="Роль" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" parent="BzKpuiVinzIO0FmsP6Cw-34" vertex="1">
           <mxGeometry y="120" width="140" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="SDKdrSx9SnEfHDNpXULV-3" value="Готовность" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="BzKpuiVinzIO0FmsP6Cw-34">
+          <mxGeometry y="150" width="140" height="30" as="geometry" />
+        </mxCell>
         <mxCell id="BzKpuiVinzIO0FmsP6Cw-39" value="Комната" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
-          <mxGeometry x="240" y="70" width="140" height="150" as="geometry" />
+          <mxGeometry x="240" y="70" width="140" height="120" as="geometry" />
         </mxCell>
         <mxCell id="BzKpuiVinzIO0FmsP6Cw-40" value="Ид" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" parent="BzKpuiVinzIO0FmsP6Cw-39" vertex="1">
           <mxGeometry y="30" width="140" height="30" as="geometry" />
@@ -30,9 +33,6 @@
         </mxCell>
         <mxCell id="BzKpuiVinzIO0FmsP6Cw-42" value="ИдТекущейИгры?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" parent="BzKpuiVinzIO0FmsP6Cw-39" vertex="1">
           <mxGeometry y="90" width="140" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="SDKdrSx9SnEfHDNpXULV-1" value="ИдМенеджера" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="BzKpuiVinzIO0FmsP6Cw-39">
-          <mxGeometry y="120" width="140" height="30" as="geometry" />
         </mxCell>
         <mxCell id="BzKpuiVinzIO0FmsP6Cw-43" value="Игра" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
           <mxGeometry x="435" y="70" width="140" height="150" as="geometry" />
@@ -145,8 +145,8 @@
             <Array as="points">
               <mxPoint x="50" y="120" />
               <mxPoint x="40" y="120" />
-              <mxPoint x="40" y="240" />
-              <mxPoint x="590" y="240" />
+              <mxPoint x="40" y="270" />
+              <mxPoint x="590" y="270" />
               <mxPoint x="590" y="205" />
             </Array>
           </mxGeometry>
@@ -155,8 +155,8 @@
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="30" y="115" />
-              <mxPoint x="30" y="260" />
-              <mxPoint x="600" y="260" />
+              <mxPoint x="30" y="290" />
+              <mxPoint x="600" y="290" />
               <mxPoint x="600" y="175" />
             </Array>
           </mxGeometry>
@@ -166,15 +166,6 @@
             <Array as="points">
               <mxPoint x="420" y="115" />
               <mxPoint x="420" y="175" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="SDKdrSx9SnEfHDNpXULV-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="BzKpuiVinzIO0FmsP6Cw-35" target="SDKdrSx9SnEfHDNpXULV-1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="190" y="130" />
-              <mxPoint x="215" y="130" />
-              <mxPoint x="215" y="205" />
             </Array>
           </mxGeometry>
         </mxCell>
