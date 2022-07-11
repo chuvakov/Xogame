@@ -7,5 +7,5 @@ public interface IGameService
 {
     Task<DoStepResultDto> DoStep(DoStepInput input);
     Task<GameDto> Get(string roomName);
-    Task StartGame(int playerFirstId, int playerSecondId, int roomId);
+    Task StartGame(string roomName);
 }

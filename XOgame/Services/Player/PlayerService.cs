@@ -29,14 +29,6 @@ public class PlayerService : IPlayerService
             if (user == null) throw new UserFriendlyException(@$"Пользователь с ником ""{nickname}"" не найден", -100);
             user.IsReady = !user.IsReady;
 
-            var roomId = user.CurrentRoomId;
-            var opponent = await _context.Users.SingleOrDefaultAsync(u => u.CurrentRoomId == roomId && u.Id != user.Id);
-
-            if (opponent != null && opponent.IsReady && user.IsReady)
-            {
-                await _gameService.StartGame(opponent.Id, user.Id, roomId.Value);
-            }
-
             await _context.SaveChangesAsync();
             return user.IsReady;
         }

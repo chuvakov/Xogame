@@ -13,7 +13,8 @@ public class XOgameContext : DbContext
     
     public XOgameContext(DbContextOptions options) : base(options)
     {}
-
+    
+    //Тонкие настройки связок таблиц
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Game>()

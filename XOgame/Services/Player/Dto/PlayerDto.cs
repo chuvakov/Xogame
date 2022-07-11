@@ -7,4 +7,5 @@ public class PlayerDto
     public string Nickname { get; set; }
     public FigureType? FigureType { get; set; }
     public bool IsReady { get; set; }
+    public Role Role { get; set; }
 }

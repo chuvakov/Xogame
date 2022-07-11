@@ -263,17 +263,33 @@ public class GameService : IGameService
         return result;
     }
     
-    //Вспомогательный метод создающий запись в таблице Игра
-    public async Task StartGame(int playerFirstId, int playerSecondId, int roomId)
+    public async Task StartGame(string roomName)
     {
         try
         {
+            var room = await _context.Rooms
+                .Include(r => r.Users)
+                .SingleOrDefaultAsync(r => r.Name == roomName);
+
+            if (room == null)
+            {
+                throw new UserFriendlyException($@"Комната с именем ""{roomName}"" не найдена", -100);
+            }
+
+            if (room.Users.Count < 2)
+            {
+                throw new UserFriendlyException($@"В комнате ""{roomName}"" недостаточно игроков для начала игры", -100);
+            }
+
+            var playerFirstId = room.Users.ToArray()[0].Id;
+            var playerSecondId = room.Users.ToArray()[1].Id;
+
             var random = new Random();
             var playerFirstFigureType = random.Next(0, 2);
             
             var game = new Core.Models.Game
             {
-                RoomId = roomId,
+                RoomId = room.Id,
                 UserTurnId = playerFirstFigureType == 1 ? playerFirstId : playerSecondId
             };
 
@@ -294,13 +310,7 @@ public class GameService : IGameService
                 FigureType = playerFirstFigureType == 1 ? FigureType.Nought : FigureType.Cross
             });
 
-            var room = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
-
-            if (room != null)
-            {
-                room.CurrentGameId = game.Id;
-            }
-
+            room.CurrentGameId = game.Id;
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
