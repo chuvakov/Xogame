@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-07-12T06:18:41.640Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" etag="UerIzCpX8__3VZ2cV6Rb" version="20.0.1" type="github">
+<mxfile host="app.diagrams.net" modified="2022-07-12T06:19:20.647Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" etag="2GXN3Sw1NrFQhupQp7kF" version="20.0.1" type="github">
   <diagram id="ZaCi_uB1NjFAqdQw6VMu" name="Page-1">
     <mxGraphModel dx="1238" dy="547" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -34,7 +34,7 @@
         <mxCell id="SDKdrSx9SnEfHDNpXULV-4" value="ИдТекущейИгры?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="BzKpuiVinzIO0FmsP6Cw-39">
           <mxGeometry y="90" width="140" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="BzKpuiVinzIO0FmsP6Cw-42" value="Пароль" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" parent="BzKpuiVinzIO0FmsP6Cw-39" vertex="1">
+        <mxCell id="BzKpuiVinzIO0FmsP6Cw-42" value="Пароль?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" parent="BzKpuiVinzIO0FmsP6Cw-39" vertex="1">
           <mxGeometry y="120" width="140" height="30" as="geometry" />
         </mxCell>
         <mxCell id="BzKpuiVinzIO0FmsP6Cw-43" value="Игра" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
