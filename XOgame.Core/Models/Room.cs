@@ -15,4 +15,6 @@ public class Room : Entity
     public virtual Game CurrentGame { get; set; }
     
     public virtual ICollection<Game> Games { get; set; }
+    
+    public string Password { get; set; }
 }

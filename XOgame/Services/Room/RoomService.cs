@@ -33,7 +33,8 @@ public class RoomService : IRoomService
             {
                 Name = r.Name,
                 AmountUsers = r.Users.Count,
-                MaxAmountUsers = 2
+                MaxAmountUsers = 2,
+                IsHavePassword = !string.IsNullOrEmpty(r.Password)
             });
 
             return result;
@@ -65,6 +66,12 @@ public class RoomService : IRoomService
             {
                 Name = input.Name,
             };
+
+            if (!string.IsNullOrEmpty(input.Password))
+            {
+                room.Password = input.Password;
+            }
+            
             await _context.Rooms.AddAsync(room);
             await _context.SaveChangesAsync();
             
@@ -108,6 +115,11 @@ public class RoomService : IRoomService
                 .SingleOrDefaultAsync(r => r.Name == input.RoomName);
 
             if (room is null) throw new UserFriendlyException($@"Комната ""{input.RoomName}"" не найдена", -100);
+
+            if (!string.IsNullOrEmpty(room.Password) && room.Password != input.Password)
+            {
+                throw new UserFriendlyException("Пароль не верный", -100);
+            }
 
             if (room.Users.Count == 2) throw new UserFriendlyException($"Комната {input.RoomName} заполнена", -100);
 
