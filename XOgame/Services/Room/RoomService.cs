@@ -4,7 +4,6 @@ using XOgame.Core;
 using XOgame.Core.Enums;
 using XOgame.Core.Models;
 using XOgame.Extensions;
-using XOgame.Services.Player;
 using XOgame.Services.Player.Dto;
 using XOgame.Services.Room.Dto;
 
@@ -34,7 +33,8 @@ public class RoomService : IRoomService
             {
                 Name = r.Name,
                 AmountUsers = r.Users.Count,
-                MaxAmountUsers = 2
+                MaxAmountUsers = 2,
+                IsHavePassword = !string.IsNullOrEmpty(r.Password)
             });
 
             return result;
@@ -53,11 +53,30 @@ public class RoomService : IRoomService
             if (_context.Rooms.Any(r => r.Name == input.Name))
                 throw new UserFriendlyException($@"Комната ""{input.Name}"" уже есть", -100);
 
-            await _context.Rooms.AddAsync(new Core.Models.Room
-            {
-                Name = input.Name
-            });
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Nickname == input.ManagerNickname);
+            if (user == null)
+                throw new UserFriendlyException($@"Пользователь с ником ""{input.ManagerNickname}"" не найден", -100);
 
+            if (user.CurrentRoomId.HasValue && user.Role == Role.Manager)
+            {
+                await ResetRoomManager(user);
+            }
+            
+            var room = new Core.Models.Room
+            {
+                Name = input.Name,
+            };
+
+            if (!string.IsNullOrEmpty(input.Password))
+            {
+                room.Password = input.Password;
+            }
+            
+            await _context.Rooms.AddAsync(room);
+            await _context.SaveChangesAsync();
+            
+            user.CurrentRoomId = room.Id;
+            user.Role = Role.Manager;
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -65,6 +84,25 @@ public class RoomService : IRoomService
             _logger.Error(e);
             throw;
         }
+    }
+
+    private async Task ResetRoomManager(User manager)
+    {
+        var room = await _context.Rooms
+            .Include(r => r.Users)
+            .SingleAsync(r => r.Id == manager.CurrentRoomId);
+
+        if (room.Users.Any(u => u.Id != manager.Id))
+        {
+            var user = room.Users.First(u => u.Id != manager.Id);
+            user.Role = Role.Manager;
+        }
+        else
+        {
+            _context.Rooms.Remove(room);
+        }
+
+        await _context.SaveChangesAsync();
     }
 
     public async Task<EnterToGameDto> Enter(EnterToRoomDto input)
@@ -78,6 +116,11 @@ public class RoomService : IRoomService
 
             if (room is null) throw new UserFriendlyException($@"Комната ""{input.RoomName}"" не найдена", -100);
 
+            if (!string.IsNullOrEmpty(room.Password) && room.Password != input.Password)
+            {
+                throw new UserFriendlyException("Пароль не верный", -100);
+            }
+
             if (room.Users.Count == 2) throw new UserFriendlyException($"Комната {input.RoomName} заполнена", -100);
 
             var player = await _context.Users
@@ -87,6 +130,16 @@ public class RoomService : IRoomService
 
             player.IsReady = false;
             player.CurrentRoomId = room.Id;
+
+            if (room.Users.Any(u => u.Role == Role.Manager && u.Id != player.Id))
+            {
+                player.Role = Role.Player;
+            }
+            else
+            {
+                player.Role = Role.Manager;
+            }
+            
             await _context.SaveChangesAsync();
 
             var result = new EnterToGameDto
@@ -95,7 +148,8 @@ public class RoomService : IRoomService
                 {
                     Nickname = player.Nickname,
                     IsReady = player.IsReady,
-                    FigureType = FigureType.Cross
+                    FigureType = FigureType.Cross,
+                    Role = player.Role
                 }
             };
 
@@ -108,7 +162,8 @@ public class RoomService : IRoomService
                 {
                     Nickname = opponent.Nickname,
                     FigureType = FigureType.Cross,
-                    IsReady = opponent.IsReady
+                    IsReady = opponent.IsReady,
+                    Role = opponent.Role
                 };
             }
 
@@ -141,8 +196,17 @@ public class RoomService : IRoomService
                 _context.Rooms.Remove(room);
                 isRoomDeleted = true;
             }
+            else
+            {
+                if (user.Role == Role.Manager)
+                {
+                    var secondUser = room.Users.First(u => u.Nickname != user.Nickname);
+                    secondUser.Role = Role.Manager;
+                }
+            }
 
             user.CurrentRoomId = null;
+            user.Role = Role.User;
             await _context.SaveChangesAsync();
             return isRoomDeleted;
         }
@@ -152,8 +216,6 @@ public class RoomService : IRoomService
             throw;
         }
     }
-
-    
 
     public async Task<RoomInfoDto> GetInfo(string name)
     {
@@ -169,6 +231,7 @@ public class RoomService : IRoomService
             }
 
             var firstUser = room.Users.ToArray()[0];
+            
             FigureType? firstUserFigureType = await _context.UserGames
                 .Where(ug => ug.UserId == firstUser.Id)
                 .Select(ug => ug.FigureType)
@@ -180,7 +243,8 @@ public class RoomService : IRoomService
                 {
                     FigureType = firstUserFigureType,
                     IsReady = firstUser.IsReady,
-                    Nickname = firstUser.Nickname
+                    Nickname = firstUser.Nickname,
+                    Role = firstUser.Role
                 }
             };
 
@@ -189,23 +253,21 @@ public class RoomService : IRoomService
                 var secondUser = room.Users.ToArray()[1];
                 
                 FigureType? secondUserFigureType = null;
-                if (firstUserFigureType.HasValue)
+                if (firstUserFigureType.Value == FigureType.Nought)
                 {
-                    if (firstUserFigureType.Value == FigureType.Nought)
-                    {
-                        secondUserFigureType = FigureType.Cross;
-                    }
-                    else
-                    {
-                        secondUserFigureType = FigureType.Nought;
-                    }
+                    secondUserFigureType = FigureType.Cross;
+                }
+                else
+                {
+                    secondUserFigureType = FigureType.Nought;
                 }
 
                 players.Add(new PlayerDto
                 {
                     FigureType = secondUserFigureType,
                     IsReady = secondUser.IsReady,
-                    Nickname = secondUser.Nickname
+                    Nickname = secondUser.Nickname,
+                    Role = secondUser.Role
                 });
             }
 

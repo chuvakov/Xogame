@@ -4,4 +4,5 @@ public class EnterToRoomDto
 {
     public string Nickname { get; set; }
     public string RoomName { get; set; }
+    public string Password { get; set; }
 }

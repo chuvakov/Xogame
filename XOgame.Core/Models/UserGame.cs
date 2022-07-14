@@ -3,6 +3,7 @@ using XOgame.Core.Enums;
 
 namespace XOgame.Core.Models;
 
+//эта таблица символизирует связь многие ко многим
 public class UserGame : Entity
 {
     public int UserId { get; set; }

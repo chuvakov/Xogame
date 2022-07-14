@@ -17,24 +17,56 @@ public class GameService : IGameService
     private readonly IHubContext<GameHub> _gameHub;
     private readonly ILogger<GameService> _logger;
 
-    private readonly int[][] _winnerPositions =
+    private readonly WinnerPositionDto[] _winnerPositions =
     {
-        new[] {1, 2, 3},
-        new[] {4, 5, 6},
-        new[] {7, 8, 9},
-        new[] {1, 4, 7},
-        new[] {2, 5, 8},
-        new[] {3, 6, 9},
-        new[] {1, 5, 9},
-        new[] {3, 5, 7}
+        new WinnerPositionDto()
+        {
+            Cells = new[] {1, 2, 3},
+            Type = WinnerPositionType.Horizontal
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {4, 5, 6},
+            Type = WinnerPositionType.Horizontal
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {7, 8, 9},
+            Type = WinnerPositionType.Horizontal
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {1, 4, 7},
+            Type = WinnerPositionType.Vertical
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {2, 5, 8},
+            Type = WinnerPositionType.Vertical
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {3, 6, 9},
+            Type = WinnerPositionType.Vertical
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {1, 5, 9},
+            Type = WinnerPositionType.LeftSlash
+        },
+        new WinnerPositionDto()
+        {
+            Cells = new[] {3, 5, 7},
+            Type = WinnerPositionType.RightSlash
+        }
     };
 
-        public GameService(XOgameContext context, IHubContext<GameHub> gameHub, ILogger<GameService> logger)
-        {
-            _context = context;
-            _gameHub = gameHub;
-            _logger = logger;
-        }
+    public GameService(XOgameContext context, IHubContext<GameHub> gameHub, ILogger<GameService> logger)
+    {
+        _context = context;
+        _gameHub = gameHub;
+        _logger = logger;
+    }
 
     public async Task<DoStepResultDto> DoStep(DoStepInput input)
     {
@@ -101,11 +133,11 @@ public class GameService : IGameService
         foreach (var winnerPosition in _winnerPositions)
         {
             var resultPosition = numberSteps
-                .Intersect(winnerPosition)
+                .Intersect(winnerPosition.Cells)
                 .OrderBy(n => n)
                 .ToArray();
 
-            if (Enumerable.SequenceEqual(resultPosition, winnerPosition))
+            if (Enumerable.SequenceEqual(resultPosition, winnerPosition.Cells))
             {
                 result.IsWinner = true;
                 result.IsFinish = true;
@@ -120,16 +152,18 @@ public class GameService : IGameService
                     {
                         await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
                         {
-                            isWinner = true,
+                            result = GameResult.Win,
+                            winnerPosition = winnerPosition
                         });
                     }
                     else
                     {
                         await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
                         {
-                            isWinner = false,
+                            result = GameResult.Lose,
                             cell = input.CellNumber,
-                            figureType = userGame.FigureType == FigureType.Cross ? 'O' : 'X'
+                            figureType = userGame.FigureType == FigureType.Cross ? 'O' : 'X',
+                            winnerPosition = winnerPosition
                         });
                     }
                 }
@@ -139,6 +173,40 @@ public class GameService : IGameService
                 
                 return result;
             }
+        }
+
+        if (result.IsFinish)
+        {
+            foreach (var userGame in game.UserGames)
+            {
+                var player = await _context.Users.SingleAsync(u => u.Id == userGame.UserId);
+                player.IsReady = false;
+                await _context.SaveChangesAsync();
+                    
+                if (user.Id == player.Id)
+                {
+                    await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
+                    {
+                        result = GameResult.Draw,
+                        cell = input.CellNumber,
+                        figureType = userGame.FigureType == FigureType.Cross ? 'X' : 'O'
+                    });
+                }
+                else
+                {
+                    await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
+                    {
+                        result = GameResult.Draw,
+                        cell = input.CellNumber,
+                        figureType = userGame.FigureType == FigureType.Cross ? 'O' : 'X'
+                    });
+                }
+            }
+
+            user.CurrentRoom.CurrentGameId = null;
+            await _context.SaveChangesAsync();
+
+            return result;
         }
 
         game.UserTurnId = game.UserGames.Single(ug => ug.UserId != user.Id).UserId;
@@ -195,17 +263,33 @@ public class GameService : IGameService
         return result;
     }
     
-    //Вспомогательный метод создающий запись в таблице Игра
-    public async Task StartGame(int playerFirstId, int playerSecondId, int roomId)
+    public async Task StartGame(string roomName)
     {
         try
         {
+            var room = await _context.Rooms
+                .Include(r => r.Users)
+                .SingleOrDefaultAsync(r => r.Name == roomName);
+
+            if (room == null)
+            {
+                throw new UserFriendlyException($@"Комната с именем ""{roomName}"" не найдена", -100);
+            }
+
+            if (room.Users.Count < 2)
+            {
+                throw new UserFriendlyException($@"В комнате ""{roomName}"" недостаточно игроков для начала игры", -100);
+            }
+
+            var playerFirstId = room.Users.ToArray()[0].Id;
+            var playerSecondId = room.Users.ToArray()[1].Id;
+
             var random = new Random();
             var playerFirstFigureType = random.Next(0, 2);
             
             var game = new Core.Models.Game
             {
-                RoomId = roomId,
+                RoomId = room.Id,
                 UserTurnId = playerFirstFigureType == 1 ? playerFirstId : playerSecondId
             };
 
@@ -226,13 +310,7 @@ public class GameService : IGameService
                 FigureType = playerFirstFigureType == 1 ? FigureType.Nought : FigureType.Cross
             });
 
-            var room = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
-
-            if (room != null)
-            {
-                room.CurrentGameId = game.Id;
-            }
-
+            room.CurrentGameId = game.Id;
             await _context.SaveChangesAsync();
         }
         catch (Exception e)

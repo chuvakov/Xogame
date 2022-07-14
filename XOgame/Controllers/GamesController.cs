@@ -38,4 +38,21 @@ public class GamesController : ControllerBase
     {
         return Ok(await _service.Get(roomName));
     }
+
+    [HttpPost("[action]")]
+    public async Task<IActionResult> StartGame(string roomName)
+    {
+        try
+        {
+            await _service.StartGame(roomName);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            var message = "Не удалось начать игру";
+
+            if (e is UserFriendlyException) message = e.Message;
+            return StatusCode((int) HttpStatusCode.InternalServerError, message);
+        }
+    }
 }

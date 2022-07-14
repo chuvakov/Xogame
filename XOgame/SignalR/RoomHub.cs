@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using XOgame.Common.Exceptions;
 using XOgame.Core;
 using XOgame.Services.Player.Dto;
 
@@ -21,7 +22,7 @@ public class RoomHub : Hub
 
         if (room == null)
         {
-            return;
+            throw new UserFriendlyException(@$"Комната с названием ""{name}"" не найдена, -100");
         }
 
         await Clients.All.SendAsync("CreateRoom");
@@ -45,6 +46,7 @@ public class RoomHub : Hub
             {
                 Nickname = user.Nickname,
                 IsReady = user.IsReady,
+                Role = user.Role
             };
 
             if (room.CurrentGameId != null)
@@ -59,5 +61,17 @@ public class RoomHub : Hub
         }
 
         await Clients.All.SendAsync("ChangeStateRoom" + name, players);
+    }
+
+    public async Task StartGame(string roomName)
+    {
+        var room = await _context.Rooms.SingleOrDefaultAsync(r => r.Name == roomName);
+
+        if (room == null)
+        {
+            throw new UserFriendlyException(@$"Комната с названием ""{roomName}"" не найдена, -100");
+        }
+
+        await Clients.All.SendAsync("StartGame" + roomName);
     }
 }
