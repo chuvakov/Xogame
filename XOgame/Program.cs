@@ -5,6 +5,7 @@ using XOgame.Services.Account;
 using XOgame.Services.Game;
 using XOgame.Services.Player;
 using XOgame.Services.Room;
+using XOgame.Services.Setting;
 using XOgame.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,6 +41,7 @@ builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<IRoomService, RoomService>();
 builder.Services.AddTransient<IPlayerService, PlayerService>();
 builder.Services.AddTransient<IGameService, GameService>();
+builder.Services.AddTransient<ISettingService, SettingService>();
 
 #endregion
 

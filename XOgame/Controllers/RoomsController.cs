@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using XOgame.Common.Exceptions;
+using XOgame.Extensions;
 using XOgame.Services.Player;
 using XOgame.Services.Room;
 using XOgame.Services.Room.Dto;
@@ -16,12 +17,14 @@ public class RoomsController : ControllerBase
     private readonly IRoomService _roomService;
     private readonly IHubContext<RoomHub> _roomHub;
     private readonly IPlayerService _playerService;
+    private readonly ILogger<RoomsController> _logger;
 
-    public RoomsController(IRoomService roomService, IHubContext<RoomHub> roomHub, IPlayerService playerService)
+    public RoomsController(IRoomService roomService, IHubContext<RoomHub> roomHub, IPlayerService playerService, ILogger<RoomsController> logger)
     {
         _roomService = roomService;
         _roomHub = roomHub;
         _playerService = playerService;
+        _logger = logger;
     }
 
     [HttpGet("[action]")]
@@ -58,12 +61,14 @@ public class RoomsController : ControllerBase
         {
             if (await _playerService.IsPlayerInRoom(input.Nickname))
             {
+                _logger.Error(@$"Пользователь с никком ""{input.Nickname}"" уже находится в другой комнате");
                 return BadRequest("Ник занят");
             }
             return Ok(await _roomService.Enter(input));
         }
         catch (Exception e)
         {
+            _logger.Error(e);
             var message = "Не удалось присоедениться к комнате";
 
             if (e is UserFriendlyException) message = e.Message;

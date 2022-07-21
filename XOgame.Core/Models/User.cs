@@ -14,4 +14,6 @@ public class User : Entity
     
     public bool IsReady { get; set; }
     public Role Role { get; set; }
+
+    public SettingsSound SettingsSound { get; set; }
 }

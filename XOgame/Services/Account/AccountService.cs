@@ -35,7 +35,19 @@ public class AccountService : IAccountService
     {
         try
         {
-            await _context.Users.AddAsync(new User {Nickname = input.Nickname});
+            var user = new User
+            {
+                Nickname = input.Nickname,
+                SettingsSound = new SettingsSound()
+                {
+                    IsEnabledDraw = true,
+                    IsEnabledLose = true,
+                    IsEnabledStep = true,
+                    IsEnabledWin = true,
+                    IsEnabledStartGame = true
+                }
+            };
+            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
         }
         catch (Exception e)

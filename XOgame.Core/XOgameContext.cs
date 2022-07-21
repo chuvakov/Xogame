@@ -10,6 +10,7 @@ public class XOgameContext : DbContext
     public DbSet<Room> Rooms { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<UserGame> UserGames { get; set; }
+    public DbSet<SettingsSound> SettingsSounds { get; set; }
     
     public XOgameContext(DbContextOptions options) : base(options)
     {}
