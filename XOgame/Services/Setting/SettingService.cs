@@ -53,11 +53,11 @@ public class SettingService : ISettingService
             throw new UserFriendlyException(@$"Пользователь с ником ""{updateSettings.Nickname}"" отсутствует");
         }
 
-        user.SettingsSound.IsEnabledDraw = updateSettings.SettingsDto.SoundSettings.IsEnabledDraw;
-        user.SettingsSound.IsEnabledLose = updateSettings.SettingsDto.SoundSettings.IsEnabledLose;
-        user.SettingsSound.IsEnabledStep = updateSettings.SettingsDto.SoundSettings.IsEnabledStep;
-        user.SettingsSound.IsEnabledWin = updateSettings.SettingsDto.SoundSettings.IsEnabledWin;
-        user.SettingsSound.IsEnabledStartGame = updateSettings.SettingsDto.SoundSettings.IsEnabledStart;
+        user.SettingsSound.IsEnabledDraw = updateSettings.Settings.SoundSettings.IsEnabledDraw;
+        user.SettingsSound.IsEnabledLose = updateSettings.Settings.SoundSettings.IsEnabledLose;
+        user.SettingsSound.IsEnabledStep = updateSettings.Settings.SoundSettings.IsEnabledStep;
+        user.SettingsSound.IsEnabledWin = updateSettings.Settings.SoundSettings.IsEnabledWin;
+        user.SettingsSound.IsEnabledStartGame = updateSettings.Settings.SoundSettings.IsEnabledStart;
 
         await _context.SaveChangesAsync();
     }
