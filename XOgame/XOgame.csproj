@@ -20,4 +20,10 @@
       <ProjectReference Include="..\XOgame.Core\XOgame.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="..\CHANGELOG.md">
+        <Link>CHANGELOG.md</Link>
+      </Content>
+    </ItemGroup>
+
 </Project>
