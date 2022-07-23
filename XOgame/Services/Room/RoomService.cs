@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using XOgame.Common.Dto;
 using XOgame.Common.Exceptions;
 using XOgame.Core;
 using XOgame.Core.Enums;
@@ -20,12 +21,19 @@ public class RoomService : IRoomService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<RoomDto>> GetAll()
+    public async Task<IEnumerable<RoomDto>> GetAll(GetAllRoomInput input)
     {
         try
         {
-            var rooms = await _context.Rooms
-                .Include(r => r.Users)
+            IQueryable<Core.Models.Room> query = _context.Rooms
+                .Include(r => r.Users);
+
+            if (!string.IsNullOrEmpty(input.Keyword))
+            {
+                query = query.Where(r => r.Name.ToLower().Contains(input.Keyword.ToLower()));
+            }
+            
+            var rooms = await query
                 .AsNoTracking()
                 .ToListAsync();
 

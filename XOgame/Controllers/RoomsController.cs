@@ -28,11 +28,11 @@ public class RoomsController : ControllerBase
     }
 
     [HttpGet("[action]")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] GetAllRoomInput input)
     {
         try
         {
-            return Ok(await _roomService.GetAll());
+            return Ok(await _roomService.GetAll(input));
         }
         catch
         {

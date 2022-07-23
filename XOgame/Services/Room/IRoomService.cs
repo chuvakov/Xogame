@@ -5,7 +5,7 @@ namespace XOgame.Services.Room;
 
 public interface IRoomService
 {
-    Task<IEnumerable<RoomDto>> GetAll();
+    Task<IEnumerable<RoomDto>> GetAll(GetAllRoomInput input);
     Task Create(CreateRoomDto input);
     Task<EnterToGameDto> Enter(EnterToRoomDto input);
     Task<bool> Exit(string nickname);
