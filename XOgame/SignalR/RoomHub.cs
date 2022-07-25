@@ -65,13 +65,16 @@ public class RoomHub : Hub
 
     public async Task StartGame(string roomName)
     {
-        var room = await _context.Rooms.SingleOrDefaultAsync(r => r.Name == roomName);
+        var room = await _context.Rooms
+            .Include(r => r.CurrentGame)
+            .ThenInclude(cg => cg.UserTurn)
+            .SingleOrDefaultAsync(r => r.Name == roomName);
 
         if (room == null)
         {
             throw new UserFriendlyException(@$"Комната с названием ""{roomName}"" не найдена, -100");
         }
 
-        await Clients.All.SendAsync("StartGame" + roomName);
+        await Clients.All.SendAsync("StartGame" + roomName, room.CurrentGame.UserTurn.Nickname);
     }
 }
