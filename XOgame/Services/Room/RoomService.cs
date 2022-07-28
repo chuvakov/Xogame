@@ -157,7 +157,8 @@ public class RoomService : IRoomService
                     Nickname = player.Nickname,
                     IsReady = player.IsReady,
                     FigureType = FigureType.Cross,
-                    Role = player.Role
+                    Role = player.Role,
+                    Avatar = player.PathToAvatar != null ? File.ReadAllBytes(player.PathToAvatar) : null
                 }
             };
 
@@ -171,7 +172,8 @@ public class RoomService : IRoomService
                     Nickname = opponent.Nickname,
                     FigureType = FigureType.Cross,
                     IsReady = opponent.IsReady,
-                    Role = opponent.Role
+                    Role = opponent.Role,
+                    Avatar = player.PathToAvatar != null ? File.ReadAllBytes(player.PathToAvatar) : null
                 };
             }
 
@@ -252,7 +254,8 @@ public class RoomService : IRoomService
                     FigureType = firstUserFigureType,
                     IsReady = firstUser.IsReady,
                     Nickname = firstUser.Nickname,
-                    Role = firstUser.Role
+                    Role = firstUser.Role,
+                    Avatar = firstUser.PathToAvatar != null ? File.ReadAllBytes(firstUser.PathToAvatar) : null
                 }
             };
 
@@ -275,7 +278,8 @@ public class RoomService : IRoomService
                     FigureType = secondUserFigureType,
                     IsReady = secondUser.IsReady,
                     Nickname = secondUser.Nickname,
-                    Role = secondUser.Role
+                    Role = secondUser.Role,
+                    Avatar = secondUser.PathToAvatar != null ? File.ReadAllBytes(secondUser.PathToAvatar) : null
                 });
             }
 

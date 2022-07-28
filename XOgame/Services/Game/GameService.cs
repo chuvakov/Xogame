@@ -235,7 +235,8 @@ public class GameService : IGameService
         {
             Players = room.Users.Select(u => new PlayerShortDto()
             {
-                Nickname = u.Nickname
+                Nickname = u.Nickname,
+                Avatar = u.PathToAvatar != null ? File.ReadAllBytes(u.PathToAvatar) : null
             }),
         };
 
