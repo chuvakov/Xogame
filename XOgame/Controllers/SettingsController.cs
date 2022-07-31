@@ -27,4 +27,11 @@ public class SettingsController : ControllerBase
         await _service.Update(input);
         return Ok();
     }
+    
+    [HttpPost("[action]")]
+    public async Task<IActionResult> LoadAvatar(string nickname, [FromForm]IFormFile avatar)
+    {
+        await _service.LoadAvatar(nickname, avatar);
+        return Ok();
+    }
 }

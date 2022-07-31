@@ -36,7 +36,8 @@ public class SettingService : ISettingService
                 IsEnabledStart = user.SettingsSound.IsEnabledStartGame,
                 IsEnabledStep = user.SettingsSound.IsEnabledStep,
                 IsEnabledWin = user.SettingsSound.IsEnabledWin
-            }
+            },
+            Avatar = user.PathToAvatar != null ? File.ReadAllBytes(user.PathToAvatar) : null
         };
 
         return settings;
@@ -58,7 +59,32 @@ public class SettingService : ISettingService
         user.SettingsSound.IsEnabledStep = updateSettings.Settings.SoundSettings.IsEnabledStep;
         user.SettingsSound.IsEnabledWin = updateSettings.Settings.SoundSettings.IsEnabledWin;
         user.SettingsSound.IsEnabledStartGame = updateSettings.Settings.SoundSettings.IsEnabledStart;
+        
+        // LoadAvatar(updateSettings.Nickname, updateSettings.Settings.Avatar)
 
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task LoadAvatar(string nickname, IFormFile avatar)
+    {
+        var user = await _context.Users.SingleOrDefaultAsync(u => u.Nickname == nickname);
+        if (user == null)
+        {
+            throw new UserFriendlyException($@"Пользователь с ником ""{nickname}"" не найден!");
+        }
+
+        if (!Directory.Exists("Avatars"))
+        {
+            Directory.CreateDirectory("Avatars");
+        }
+        
+        string path = Path.Combine("Avatars", Path.GetFileNameWithoutExtension(avatar.FileName) + "_" + DateTime.Now.ToString("ddMMyyyyHHmmss") + "." + Path.GetExtension(avatar.FileName));
+        using (var fs = new FileStream(path, FileMode.Create))
+        {
+            await avatar.CopyToAsync(fs);
+        }
+
+        user.PathToAvatar = path;
         await _context.SaveChangesAsync();
     }
 }

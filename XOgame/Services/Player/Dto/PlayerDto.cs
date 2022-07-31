@@ -8,4 +8,5 @@ public class PlayerDto
     public FigureType? FigureType { get; set; }
     public bool IsReady { get; set; }
     public Role Role { get; set; }
+    public byte[] Avatar { get; set; }
 }

@@ -6,4 +6,5 @@ public interface ISettingService
 {
     Task<SettingsDto> GetAll(string userName);
     Task Update(UpdateSettingsDto updateSettings);
+    Task LoadAvatar(string nickname, IFormFile avatar);
 }

@@ -46,7 +46,8 @@ public class RoomHub : Hub
             {
                 Nickname = user.Nickname,
                 IsReady = user.IsReady,
-                Role = user.Role
+                Role = user.Role,
+                Avatar = user.PathToAvatar != null ? File.ReadAllBytes(user.PathToAvatar) : null
             };
 
             if (room.CurrentGameId != null)
