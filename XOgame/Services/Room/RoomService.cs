@@ -173,7 +173,7 @@ public class RoomService : IRoomService
                     FigureType = FigureType.Cross,
                     IsReady = opponent.IsReady,
                     Role = opponent.Role,
-                    Avatar = player.PathToAvatar != null ? File.ReadAllBytes(player.PathToAvatar) : null
+                    Avatar = opponent.PathToAvatar != null ? File.ReadAllBytes(opponent.PathToAvatar) : null
                 };
             }
 
