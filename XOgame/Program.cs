@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using XOgame.Core;
 using XOgame.Services;
 using XOgame.Services.Account;
+using XOgame.Services.Emoji;
 using XOgame.Services.Game;
 using XOgame.Services.Player;
 using XOgame.Services.Room;
@@ -42,6 +43,7 @@ builder.Services.AddTransient<IRoomService, RoomService>();
 builder.Services.AddTransient<IPlayerService, PlayerService>();
 builder.Services.AddTransient<IGameService, GameService>();
 builder.Services.AddTransient<ISettingService, SettingService>();
+builder.Services.AddTransient<IEmojiService, EmojiService>();
 
 #endregion
 
@@ -66,7 +68,12 @@ app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
+    
+    #region Хабы
     endpoints.MapHub<RoomHub>("/hubs/room");
     endpoints.MapHub<GameHub>("/hubs/game");
+    endpoints.MapHub<ChatHub>("/hubs/chat");
+    #endregion
+
 });
 app.Run();

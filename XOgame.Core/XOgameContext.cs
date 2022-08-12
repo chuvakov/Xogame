@@ -11,7 +11,9 @@ public class XOgameContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<UserGame> UserGames { get; set; }
     public DbSet<SettingsSound> SettingsSounds { get; set; }
-    
+    public DbSet<EmojiGroup> EmojiGroups { get; set; }
+    public DbSet<Emoji> Emojis { get; set; }
+
     public XOgameContext(DbContextOptions options) : base(options)
     {}
     
