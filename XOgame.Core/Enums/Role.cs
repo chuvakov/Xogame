@@ -5,5 +5,6 @@ public enum Role
     User,
     Player,
     Manager,
-    Spectator
+    Spectator,
+    Admin,
 }

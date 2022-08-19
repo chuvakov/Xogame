@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using XOgame.Core;
@@ -11,9 +12,10 @@ using XOgame.Core;
 namespace XOgame.Core.Migrations
 {
     [DbContext(typeof(XOgameContext))]
-    partial class XOgameContextModelSnapshot : ModelSnapshot
+    [Migration("20220813090426_AddLoginAndPassword")]
+    partial class AddLoginAndPassword
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,6 +189,9 @@ namespace XOgame.Core.Migrations
 
                     b.Property<bool>("IsReady")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Login")
+                        .HasColumnType("text");
 
                     b.Property<string>("Nickname")
                         .HasColumnType("text");

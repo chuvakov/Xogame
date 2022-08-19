@@ -17,4 +17,6 @@ public class User : Entity
 
     public SettingsSound SettingsSound { get; set; }
     public string PathToAvatar { get; set; }
+    
+    public string Password { get; set; }
 }
