@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using XOgame.Common.Exceptions;
@@ -10,6 +11,7 @@ using XOgame.SignalR;
 
 namespace XOgame.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class RoomsController : ControllerBase
@@ -59,11 +61,6 @@ public class RoomsController : ControllerBase
     {
         try
         {
-            if (await _playerService.IsPlayerInRoom(input.Nickname))
-            {
-                _logger.Error(@$"Пользователь с никком ""{input.Nickname}"" уже находится в другой комнате");
-                return BadRequest("Ник занят");
-            }
             return Ok(await _roomService.Enter(input));
         }
         catch (Exception e)

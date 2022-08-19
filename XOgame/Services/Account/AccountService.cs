@@ -38,6 +38,7 @@ public class AccountService : IAccountService
             var user = new User
             {
                 Nickname = input.Nickname,
+                Password = input.Password,
                 SettingsSound = new SettingsSound()
                 {
                     IsEnabledDraw = true,

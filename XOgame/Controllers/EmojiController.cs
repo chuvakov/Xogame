@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using XOgame.Core;
 using XOgame.Core.Models;
@@ -6,6 +7,7 @@ using XOgame.Services.Emoji.Dto;
 
 namespace XOgame.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class EmojiController : ControllerBase

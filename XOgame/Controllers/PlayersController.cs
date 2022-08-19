@@ -1,10 +1,12 @@
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using XOgame.Common.Exceptions;
 using XOgame.Services.Player;
 
 namespace XOgame.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class PlayersController : ControllerBase

@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using XOgame.Authentication;
 using XOgame.Core;
 using XOgame.Services;
 using XOgame.Services.Account;
@@ -16,10 +20,69 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(opt =>
+{
+    opt.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "XOgame Api",
+        Version = "v1"
+    });
+    
+    opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Введите ваш JWT в поле ввода",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    
+    opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+    { 
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<XOgameContext>(x => x.UseNpgsql(connectionString));
+
+#region Authentication
+//сформирован объект настроек на основе файла json appsettings.json => AuthSettings
+var authSettings = builder.Configuration.GetSection("AuthSettings")
+    .Get<AuthSettings>(opt => opt.BindNonPublicProperties = true);
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme) //добавляем сервис аут JWT
+    .AddJwtBearer(opt =>
+    {
+        opt.RequireHttpsMetadata = false; //не обязат. передавать данные HTTPS запроса
+        opt.TokenValidationParameters = new TokenValidationParameters
+            //Формируем настройки валидации (проверка ранее выданого токена)
+        {
+            ValidateIssuer = true,
+            ValidIssuer = authSettings.Issuer,
+
+            ValidateAudience = true,
+            ValidAudience = authSettings.Audience,
+
+            ValidateLifetime = true,
+
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = authSettings.SymmetricSecurityKey
+        };
+    });
+
+#endregion
 
 builder.Logging.AddLog4Net("log4net.config");
 builder.Services.AddCors(options =>
@@ -63,6 +126,7 @@ app.UseSwaggerUI();
 app.UseRouting();
 app.UseCors("localhost");
 
+app.UseAuthentication();//идентификация добавили в том числе для JWT токена
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
