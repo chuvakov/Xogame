@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-08-13T13:22:57.060Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36" etag="TfdzHynnyO2kNOSUhdhX" version="20.2.3" type="github">
+<mxfile host="app.diagrams.net" modified="2022-08-27T17:49:43.915Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36" etag="9UHYGUdzp3KquFt_kjSF" version="20.2.4" type="github">
   <diagram id="ZaCi_uB1NjFAqdQw6VMu" name="Page-1">
     <mxGraphModel dx="2038" dy="947" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -25,10 +25,10 @@
         <mxCell id="qDutWddubQ92su-sF-x_-1" value="ПутьДоАватарки" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" parent="BzKpuiVinzIO0FmsP6Cw-34" vertex="1">
           <mxGeometry y="180" width="140" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="4TULrLiK_P9UfuNE2g1c-2" value="Логин" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="BzKpuiVinzIO0FmsP6Cw-34">
+        <mxCell id="4TULrLiK_P9UfuNE2g1c-2" value="Логин" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" parent="BzKpuiVinzIO0FmsP6Cw-34" vertex="1">
           <mxGeometry y="210" width="140" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="4TULrLiK_P9UfuNE2g1c-1" value="Пароль" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" vertex="1" parent="BzKpuiVinzIO0FmsP6Cw-34">
+        <mxCell id="4TULrLiK_P9UfuNE2g1c-1" value="Пароль" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;" parent="BzKpuiVinzIO0FmsP6Cw-34" vertex="1">
           <mxGeometry y="240" width="140" height="30" as="geometry" />
         </mxCell>
         <mxCell id="BzKpuiVinzIO0FmsP6Cw-39" value="Комната" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
