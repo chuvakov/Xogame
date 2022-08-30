@@ -11,13 +11,11 @@ public class PlayerService : IPlayerService
 {
     private readonly XOgameContext _context;
     private readonly ILogger<PlayerService> _logger;
-    private readonly IGameService _gameService;
 
-    public PlayerService(XOgameContext context, ILogger<PlayerService> logger, IGameService gameService)
+    public PlayerService(XOgameContext context, ILogger<PlayerService> logger)
     {
         _context = context;
         _logger = logger;
-        _gameService = gameService;
     }
 
     public async Task<bool> ChangeReady(string nickname)

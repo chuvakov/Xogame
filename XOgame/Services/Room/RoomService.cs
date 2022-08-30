@@ -242,16 +242,15 @@ public class RoomService : IRoomService
 
             var firstUser = room.Users.ToArray()[0];
             
-            FigureType? firstUserFigureType = await _context.UserGames
+            var firstUserGame = await _context.UserGames
                 .Where(ug => ug.UserId == firstUser.Id)
-                .Select(ug => ug.FigureType)
                 .FirstOrDefaultAsync();
 
             var players = new List<PlayerDto>()
             {
                 new PlayerDto()
                 {
-                    FigureType = firstUserFigureType,
+                    FigureType = firstUserGame?.FigureType,
                     IsReady = firstUser.IsReady,
                     Nickname = firstUser.Nickname,
                     Role = firstUser.Role,
@@ -264,13 +263,17 @@ public class RoomService : IRoomService
                 var secondUser = room.Users.ToArray()[1];
                 
                 FigureType? secondUserFigureType = null;
-                if (firstUserFigureType.Value == FigureType.Nought)
+
+                if (firstUserGame != null)
                 {
-                    secondUserFigureType = FigureType.Cross;
-                }
-                else
-                {
-                    secondUserFigureType = FigureType.Nought;
+                    if (firstUserGame.FigureType == FigureType.Nought)
+                    {
+                        secondUserFigureType = FigureType.Cross;
+                    }
+                    else
+                    {
+                        secondUserFigureType = FigureType.Nought;
+                    }
                 }
 
                 players.Add(new PlayerDto
