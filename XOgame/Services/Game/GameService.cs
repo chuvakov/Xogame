@@ -14,8 +14,8 @@ namespace XOgame.Services.Game;
 public class GameService : IGameService
 {
     private readonly XOgameContext _context;
-    private readonly IHubContext<GameHub> _gameHub;
-    private readonly ILogger<GameService> _logger;
+    private readonly IHubContext<GameHub> _gameHub; //реализовать в тестах + МОКИ
+    private readonly ILogger<GameService> _logger; //реализовать в тестах
 
     private readonly WinnerPositionDto[] _winnerPositions =
     {
@@ -147,24 +147,27 @@ public class GameService : IGameService
                     var player = await _context.Users.SingleAsync(u => u.Id == userGame.UserId);
                     player.IsReady = false;
                     await _context.SaveChangesAsync();
-                    
-                    if (user.Id == player.Id)
+
+                    if (input.IsSendNotification)
                     {
-                        await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
+                        if (user.Id == player.Id)
                         {
-                            result = GameResult.Win,
-                            winnerPosition = winnerPosition
-                        });
-                    }
-                    else
-                    {
-                        await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
+                            await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
+                            {
+                                result = GameResult.Win,
+                                winnerPosition = winnerPosition
+                            });
+                        }
+                        else
                         {
-                            result = GameResult.Lose,
-                            cell = input.CellNumber,
-                            figureType = userGame.FigureType == FigureType.Cross ? 'O' : 'X',
-                            winnerPosition = winnerPosition
-                        });
+                            await _gameHub.Clients.All.SendAsync("GameFinished-" + player.Nickname, new
+                            {
+                                result = GameResult.Lose,
+                                cell = input.CellNumber,
+                                figureType = userGame.FigureType == FigureType.Cross ? 'O' : 'X',
+                                winnerPosition = winnerPosition
+                            });
+                        }
                     }
                 }
 
