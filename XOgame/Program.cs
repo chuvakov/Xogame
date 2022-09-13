@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using XOgame.Authentication;
@@ -139,5 +140,12 @@ app.UseEndpoints(endpoints =>
     endpoints.MapHub<ChatHub>("/hubs/chat");
     #endregion
 
+});
+
+// Directory.CreateDirectory("Avatars");
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Avatars")),
+    RequestPath = "/Avatars"
 });
 app.Run();

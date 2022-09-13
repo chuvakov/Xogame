@@ -67,6 +67,11 @@ public class SettingService : ISettingService
 
     public async Task LoadAvatar(string nickname, IFormFile avatar)
     {
+        if (avatar == null)
+        {
+            return;
+        }
+        
         var user = await _context.Users.SingleOrDefaultAsync(u => u.Nickname == nickname);
         if (user == null)
         {
